@@ -22,7 +22,8 @@ class SharedGameViewModel(
 ) : ViewModel() {
 
     private val _colorBoard = MutableStateFlow(EMPTY_BOARD)
-    val colorBoard: StateFlow<List<ColorModel>> = _colorBoard.asStateFlow()
+    val colorBoard = _colorBoard
+        .asStateFlow()
 
     private val _currentColorName = MutableStateFlow<String?>(null)
     val currentColorName: StateFlow<String?> = _currentColorName.asStateFlow()
@@ -54,15 +55,23 @@ class SharedGameViewModel(
         }
     }
 
+
+
     fun updateColorSettings(hue: Float) {
-        _selectedColor.value = Color.hsv(hue, 1f, 1f)
-        Log.e("debug", "bonjour")
-        _colorBoard.value = _colorBoard.value.map { color ->
-            if(Color.hsv(color.guessHue ?: 0f, color.saturation, color.value) != _selectedColor.value) {
-                color.updateHue(color.guessHue)
-            } else {
+        val newColor = Color.hsv(hue, 1f, 1f)
+        if (newColor == _selectedColor.value) return
+
+        _selectedColor.value = newColor
+
+        val updated = _colorBoard.value.map { color ->
+            if (color.name == _currentColorName.value) {
                 color.updateHue(hue)
+            } else {
+                color
             }
+        }
+        if (updated != _colorBoard.value) {
+            _colorBoard.value = updated
         }
     }
 

@@ -29,12 +29,13 @@ internal fun Previews(
             .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box() {
-            for (color in List(colors.size) { it }) {
-                ColorBoardPreview(modifier = Modifier.fillMaxHeight(), colors = colors)
-            }
-        }
-        ColorPreview(color = selectedColor, animatedColor = animatedColor, animatedGradient = animatedGradient)
+        ColorBoardPreview(modifier = Modifier.fillMaxHeight(), colors = colors)
+
+        ColorPreview(
+            color = selectedColor,
+            animatedColor = animatedColor,
+            animatedGradient = animatedGradient
+        )
     }
 }
 
@@ -54,6 +55,10 @@ fun PreviewsPreview() {
         selectedColor = Color.Blue,
         colors = List(5) { model },
         animatedColor = Color.Yellow,
-        animatedGradient = Brush.linearGradient(0f to Color.Yellow,  0.5f to Color.Green,  1f to Color.Blue),
+        animatedGradient = Brush.linearGradient(
+            0f to Color.Yellow,
+            0.5f to Color.Green,
+            1f to Color.Blue
+        ),
     )
 }

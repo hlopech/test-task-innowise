@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,23 +25,22 @@ internal fun ColorBoardPreview(
     modifier: Modifier = Modifier,
     colors: List<ColorModel>,
 ) {
-    Box(
-        modifier = modifier.padding(vertical = 8.dp)
-    ) {
-        colors.forEach {
-            DisplayColorFromBoard(colors)
-        }
-    }
-}
+    val stableColors = remember(colors) { colors.distinctBy { it.name } }
 
-@Composable
-private fun DisplayColorFromBoard(colors: List<ColorModel>) {
-    Column(
-        modifier = Modifier.fillMaxHeight(),
-        verticalArrangement = Arrangement.SpaceBetween,
+    Box(
+        modifier = modifier
+            .padding(vertical = 8.dp)
+            .fillMaxHeight()
     ) {
-        colors.forEach { color ->
-            BorderedBox(color)
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            stableColors.forEach { color ->
+                key(color.name) {
+                    BorderedBox(color)
+                }
+            }
         }
     }
 }
@@ -48,6 +49,7 @@ private fun DisplayColorFromBoard(colors: List<ColorModel>) {
 private fun BorderedBox(color: ColorModel) {
     fun darkenColor(color: Color) =
         Color(ColorUtils.blendARGB(color.toArgb(), Color.Black.toArgb(), 0.5f))
+
     fun ColorModel.asComposeColor() =
         guessHue?.let { hue -> Color.hsv(hue, 1f, 1f) } ?: Color.Gray
 
@@ -56,12 +58,12 @@ private fun BorderedBox(color: ColorModel) {
     val colors = listOf(outlineColor, infillColor)
     Box(contentAlignment = Alignment.Center) {
         colors.forEach { colorToDraw ->
-            val size = when(colorToDraw) {
+            val size = when (colorToDraw) {
                 outlineColor -> 38.dp
                 infillColor -> 32.dp
                 else -> 32.dp
             }
-            Surface (
+            Surface(
                 modifier = Modifier
                     .size(size)
                     .clip(RoundedCornerShape(12.dp)),

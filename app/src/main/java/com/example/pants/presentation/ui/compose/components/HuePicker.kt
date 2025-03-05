@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -38,11 +39,9 @@ private const val PICKER_WIDTH = 300
 fun HuePicker(
     modifier: Modifier = Modifier,
     hue: Float,
-    animatedColor: Color,
     onHueChange: (Float) -> Unit,
 ) {
-    onHueChange(hue)
-    val colorHue = animatedColor.hue
+
     Box(
         modifier = modifier
             .height(40.dp)

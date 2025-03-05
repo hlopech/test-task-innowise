@@ -26,6 +26,8 @@ import com.example.pants.presentation.viewmodel.SharedGameViewModel
 import com.example.pants.presentation.ui.compose.components.PickerContent
 import com.example.pants.presentation.ui.compose.components.SaveButton
 import com.example.pants.presentation.extentions.hue
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 
 @Composable
@@ -33,6 +35,7 @@ fun ColorPickerScreen(viewModel: SharedGameViewModel, onSave: () -> Unit) {
     val selectedColor by viewModel.selectedColor.collectAsStateWithLifecycle()
     val currentColorName by viewModel.currentColorName.collectAsStateWithLifecycle()
     val colorBoard by viewModel.colorBoard.collectAsStateWithLifecycle()
+
     ColorPicker(
         selectedColor = selectedColor,
         colorName = currentColorName,
@@ -51,7 +54,7 @@ private fun ColorPicker(
     colorName: String?,
     onUpdateColorSettings: (Float) -> Unit,
     onSaveColor: () -> Unit,
-    colors: List<ColorModel>,
+    colors: PersistentList<ColorModel>,
 ) {
     Column(
         modifier = Modifier
@@ -109,6 +112,6 @@ private fun ColorPickerPreview() {
         colorName = model.name,
         onUpdateColorSettings = { _ -> },
         onSaveColor = {},
-        colors = List(5) { model },
+        colors = List(5) { model }.toPersistentList(),
     )
 }

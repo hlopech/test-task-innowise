@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,14 +21,16 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import com.example.pants.domain.models.ColorModel
+import kotlinx.collections.immutable.PersistentList
 
 @Composable
 internal fun ColorBoardPreview(
     modifier: Modifier = Modifier,
-    colors: List<ColorModel>,
+    colors: PersistentList<ColorModel>,
 ) {
-    val stableColors = remember(colors) { colors.distinctBy { it.name } }
-
+    val stableColors by remember(colors) {
+        derivedStateOf { colors.distinctBy { it.name } }
+    }
     Box(
         modifier = modifier
             .padding(vertical = 8.dp)
@@ -53,8 +57,8 @@ private fun BorderedBox(color: ColorModel) {
     fun ColorModel.asComposeColor() =
         guessHue?.let { hue -> Color.hsv(hue, 1f, 1f) } ?: Color.Gray
 
-    val infillColor = color.asComposeColor()
-    val outlineColor = darkenColor(color.asComposeColor())
+    val infillColor = remember(color) { color.asComposeColor() }
+    val outlineColor = remember(infillColor) { darkenColor(infillColor) }
     val colors = listOf(outlineColor, infillColor)
     Box(contentAlignment = Alignment.Center) {
         colors.forEach { colorToDraw ->

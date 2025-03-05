@@ -25,7 +25,6 @@ class SharedGameViewModel(
     private val checkBoardOrderUseCase: CheckBoardOrderUseCase
 ) : ViewModel() {
 
-    // 1. Заменяем List на PersistentList
     private val _colorBoard = MutableStateFlow<PersistentList<ColorModel>>(persistentListOf())
     val colorBoard: StateFlow<PersistentList<ColorModel>> = _colorBoard.asStateFlow()
 
@@ -53,7 +52,6 @@ class SharedGameViewModel(
         viewModelScope.launch {
             if (_colorBoard.value.isEmpty()) return@launch
 
-            // 2. Оптимизированное обновление через PersistentList
             _colorBoard.update { currentList ->
                 currentList.map { color ->
                     if (color.name == currentColorName.value) color.updateHue(newHue) else color
@@ -68,12 +66,7 @@ class SharedGameViewModel(
 
         _selectedColor.value = newColor
 
-        // 3. Структурное обновление PersistentList
-        _colorBoard.update { currentList ->
-            currentList.map { color ->
-                if (color.name == _currentColorName.value) color.updateHue(hue) else color
-            }.toPersistentList()
-        }
+        saveColor(hue)
     }
 
     fun checkColorOrder(board: List<ColorModel>): List<ColorModel>? {
@@ -82,10 +75,12 @@ class SharedGameViewModel(
                 initColorBoard()
                 board
             }
+
             checkBoardOrderUseCase(board) -> {
                 initColorBoard()
                 null
             }
+
             else -> {
                 board.sortedBy { it.realHue }
             }
@@ -96,7 +91,6 @@ class SharedGameViewModel(
         viewModelScope.launch {
             getColorBoardUseCase(BOARD_SIZE).fold(
                 onSuccess = { newList ->
-                    // 4. Сохраняем как PersistentList
                     _colorBoard.value = newList.toPersistentList()
                 },
                 onFailure = { _errorMessage.emit(it.message.orEmpty()) }

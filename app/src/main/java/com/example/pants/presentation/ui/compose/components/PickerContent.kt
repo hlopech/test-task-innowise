@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,17 +30,18 @@ internal fun PickerContent(
     colors: PersistentList<ColorModel>,
 ) {
     Column(
-        modifier = Modifier.width(IntrinsicSize.Min),
+        modifier = Modifier.fillMaxWidth(0.8f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(48.dp),
     ) {
         Row(
             modifier = Modifier
-                .height(IntrinsicSize.Max)
+                .fillMaxWidth()
+                .aspectRatio(1f)
                 .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            ColorBoardPreview(modifier = Modifier.fillMaxHeight(), colors = colors)
+            ColorBoardPreview(modifier = Modifier, colors = colors)
 
             ColorPreview(
                 color = selectedColor,

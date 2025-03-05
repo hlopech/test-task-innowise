@@ -1,5 +1,6 @@
 package com.example.pants.presentation.ui.compose.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +31,7 @@ internal fun ColorBoardPreview(
 ) {
     Box(
         modifier = modifier
-            .padding(vertical = 8.dp)
-            .fillMaxHeight()
+            .padding(vertical = 16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxHeight(),
@@ -48,28 +48,29 @@ internal fun ColorBoardPreview(
 
 @Composable
 private fun BorderedBox(color: ColorModel) {
-    fun darkenColor(color: Color) =
-        Color(ColorUtils.blendARGB(color.toArgb(), Color.Black.toArgb(), 0.5f))
-
-    fun ColorModel.asComposeColor() =
-        guessHue?.let { hue -> Color.hsv(hue, 1f, 1f) } ?: Color.Gray
-
     val infillColor = remember(color) { color.asComposeColor() }
     val outlineColor = remember(infillColor) { darkenColor(infillColor) }
-    val colors = listOf(outlineColor, infillColor)
     Box(contentAlignment = Alignment.Center) {
-        colors.forEach { colorToDraw ->
-            val size = when (colorToDraw) {
-                outlineColor -> 38.dp
-                infillColor -> 32.dp
-                else -> 32.dp
-            }
-            Surface(
-                modifier = Modifier
-                    .size(size)
-                    .clip(RoundedCornerShape(12.dp)),
-                color = colorToDraw,
-            ) { }
-        }
+        Box(
+            modifier = Modifier
+                .size(38.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(outlineColor)
+        )
+
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(infillColor)
+        )
     }
+}
+
+private fun darkenColor(color: Color): Color {
+    return Color(ColorUtils.blendARGB(color.toArgb(), Color.Black.toArgb(), 0.5f))
+}
+
+private fun ColorModel.asComposeColor(): Color {
+    return guessHue?.let { hue -> Color.hsv(hue, 1f, 1f) } ?: Color.Gray
 }

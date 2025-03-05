@@ -25,7 +25,6 @@ import com.example.pants.presentation.extentions.hue
 @Composable
 internal fun ColorDetails(modifier: Modifier, color: Color) {
 
-
     Row(
         modifier = modifier
             .fillMaxWidth()

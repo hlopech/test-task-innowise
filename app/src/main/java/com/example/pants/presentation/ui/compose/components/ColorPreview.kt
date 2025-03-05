@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -35,25 +37,20 @@ internal fun ColorPreview(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ColorDetails(Modifier.weight(1f), animatedColor)
+        ColorDetails(Modifier, animatedColor)
         ColorBox(animatedGradient)
     }
 }
 
 @Composable
 private fun ColorBox(animatedGradient: Brush) {
-    var width by remember { mutableIntStateOf(0) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .aspectRatio(1f)
             .clip(RoundedCornerShape(16.dp))
             .background(animatedGradient)
-            .onSizeChanged { width = it.width }
-            .then(
-                with(LocalDensity.current) {
-                    Modifier.height(width.toDp())
-                }
-            )
     )
 }
 

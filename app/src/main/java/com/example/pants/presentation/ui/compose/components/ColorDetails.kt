@@ -25,6 +25,7 @@ import com.example.pants.presentation.extentions.hue
 @Composable
 internal fun ColorDetails(modifier: Modifier, color: Color) {
 
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -41,6 +42,7 @@ internal fun ColorDetails(modifier: Modifier, color: Color) {
 
 @Composable
 internal fun DataPointPresenter(title: String, data: String) {
+
     Column(
         modifier = Modifier
             .semantics(mergeDescendants = true) {

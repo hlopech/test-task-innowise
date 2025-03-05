@@ -35,8 +35,6 @@ internal fun Previews(
 
         ColorPreview(
             color = selectedColor,
-            animatedColor = animatedColor,
-            animatedGradient = animatedGradient
         )
     }
 }

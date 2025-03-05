@@ -28,9 +28,6 @@ internal fun PickerContent(
     onHueChange: (Float) -> Unit,
     colors: PersistentList<ColorModel>,
 ) {
-    val (animatedColor, animatedGradient) = animatedGradientTransition(selectedColor)
-    val stableColor = remember(animatedColor) { animatedColor }
-    val stableGradient = remember(animatedGradient) { animatedGradient }
     Column(
         modifier = Modifier.width(IntrinsicSize.Min),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -46,8 +43,6 @@ internal fun PickerContent(
 
             ColorPreview(
                 color = selectedColor,
-                animatedColor = stableColor,
-                animatedGradient = stableGradient
             )
         }
         HuePicker(hue = selectedColor.hue, onHueChange = onHueChange)

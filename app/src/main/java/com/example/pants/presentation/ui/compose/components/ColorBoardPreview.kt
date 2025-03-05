@@ -28,9 +28,6 @@ internal fun ColorBoardPreview(
     modifier: Modifier = Modifier,
     colors: PersistentList<ColorModel>,
 ) {
-    val stableColors by remember(colors) {
-        derivedStateOf { colors.distinctBy { it.name } }
-    }
     Box(
         modifier = modifier
             .padding(vertical = 8.dp)
@@ -40,7 +37,7 @@ internal fun ColorBoardPreview(
             modifier = Modifier.fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            stableColors.forEach { color ->
+            colors.forEach { color ->
                 key(color.name) {
                     BorderedBox(color)
                 }

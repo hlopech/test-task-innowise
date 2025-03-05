@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.pants.domain.models.ColorModel
 import com.example.pants.domain.usecases.CheckBoardOrderUseCase
 import com.example.pants.domain.usecases.GetColorBoardUseCase
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,15 +16,17 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+
 
 class SharedGameViewModel(
     private val getColorBoardUseCase: GetColorBoardUseCase,
     private val checkBoardOrderUseCase: CheckBoardOrderUseCase
 ) : ViewModel() {
 
-    private val _colorBoard = MutableStateFlow(EMPTY_BOARD)
-    val colorBoard: StateFlow<List<ColorModel>> = _colorBoard.asStateFlow()
+    private val _colorBoard = MutableStateFlow<PersistentList<ColorModel>>(persistentListOf())
+    val colorBoard: StateFlow<PersistentList<ColorModel>> = _colorBoard.asStateFlow()
 
     private val _currentColorName = MutableStateFlow<String?>(null)
     val currentColorName: StateFlow<String?> = _currentColorName.asStateFlow()
@@ -47,39 +51,38 @@ class SharedGameViewModel(
     fun saveColor(newHue: Float) {
         viewModelScope.launch {
             if (_colorBoard.value.isEmpty()) return@launch
-            val updatedColors = _colorBoard.value.map {
-                if (it.name == currentColorName.value) it.updateHue(newHue) else it
+
+            _colorBoard.update { currentList ->
+                currentList.map { color ->
+                    if (color.name == currentColorName.value) color.updateHue(newHue) else color
+                }.toPersistentList()
             }
-            _colorBoard.value = updatedColors
         }
     }
 
     fun updateColorSettings(hue: Float) {
-        _selectedColor.value = Color.hsv(hue, 1f, 1f)
-        Log.e("debug", "bonjour")
-        _colorBoard.value = _colorBoard.value.map { color ->
-            if(Color.hsv(color.guessHue ?: 0f, color.saturation, color.value) != _selectedColor.value) {
-                color.updateHue(color.guessHue)
-            } else {
-                color.updateHue(hue)
-            }
-        }
+        val newColor = Color.hsv(hue, 1f, 1f)
+        if (newColor == _selectedColor.value) return
+
+        _selectedColor.value = newColor
+
+        saveColor(hue)
     }
 
     fun checkColorOrder(board: List<ColorModel>): List<ColorModel>? {
-        when {
+        return when {
             board.isEmpty() -> {
                 initColorBoard()
-                return board
+                board
             }
 
             checkBoardOrderUseCase(board) -> {
                 initColorBoard()
-                return null
+                null
             }
 
             else -> {
-                return board.sortedBy { it.realHue }
+                board.sortedBy { it.realHue }
             }
         }
     }
@@ -87,7 +90,9 @@ class SharedGameViewModel(
     private fun initColorBoard() {
         viewModelScope.launch {
             getColorBoardUseCase(BOARD_SIZE).fold(
-                onSuccess = { _colorBoard.value = it.toPersistentList() },
+                onSuccess = { newList ->
+                    _colorBoard.value = newList.toPersistentList()
+                },
                 onFailure = { _errorMessage.emit(it.message.orEmpty()) }
             )
         }
@@ -95,6 +100,5 @@ class SharedGameViewModel(
 
     private companion object {
         const val BOARD_SIZE = 5
-        val EMPTY_BOARD = emptyList<ColorModel>()
     }
 }

@@ -14,11 +14,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pants.domain.models.ColorModel
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 internal fun Previews(
     modifier: Modifier = Modifier,
-    colors: List<ColorModel>,
+    colors: PersistentList<ColorModel>,
     selectedColor: Color,
     animatedColor: Color,
     animatedGradient: Brush,
@@ -29,12 +31,11 @@ internal fun Previews(
             .padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Box() {
-            for (color in List(colors.size) { it }) {
-                ColorBoardPreview(modifier = Modifier.fillMaxHeight(), colors = colors)
-            }
-        }
-        ColorPreview(color = selectedColor, animatedColor = animatedColor, animatedGradient = animatedGradient)
+        ColorBoardPreview(modifier = Modifier.fillMaxHeight(), colors = colors)
+
+        ColorPreview(
+            color = selectedColor,
+        )
     }
 }
 
@@ -52,8 +53,12 @@ fun PreviewsPreview() {
     Previews(
         modifier = Modifier,
         selectedColor = Color.Blue,
-        colors = List(5) { model },
+        colors = List(5) { model }.toPersistentList(),
         animatedColor = Color.Yellow,
-        animatedGradient = Brush.linearGradient(0f to Color.Yellow,  0.5f to Color.Green,  1f to Color.Blue),
+        animatedGradient = Brush.linearGradient(
+            0f to Color.Yellow,
+            0.5f to Color.Green,
+            1f to Color.Blue
+        ),
     )
 }

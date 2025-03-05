@@ -24,6 +24,7 @@ import com.example.pants.presentation.extentions.hue
 
 @Composable
 internal fun ColorDetails(modifier: Modifier, color: Color) {
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -40,12 +41,11 @@ internal fun ColorDetails(modifier: Modifier, color: Color) {
 
 @Composable
 internal fun DataPointPresenter(title: String, data: String) {
+
     Column(
         modifier = Modifier
             .semantics(mergeDescendants = true) {
-                // Объединяем заголовок и значение в одну семантическую группу
                 contentDescription = "$title: $data"
-                // Делаем элемент фокусируемым и важным для доступности
                 isTraversalGroup = true
             }
             .padding(4.dp),
@@ -53,8 +53,7 @@ internal fun DataPointPresenter(title: String, data: String) {
     ) {
         Text(
             text = title,
-            modifier = Modifier.clearAndSetSemantics { } // Отключаем отдельную семантику для заголовка
-        )
+            modifier = Modifier.clearAndSetSemantics { })
         Text(
             text = data,
             style = TextStyle(
@@ -62,7 +61,6 @@ internal fun DataPointPresenter(title: String, data: String) {
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             ),
-            modifier = Modifier.clearAndSetSemantics { } // Отключаем отдельную семантику для значения
-        )
+            modifier = Modifier.clearAndSetSemantics { })
     }
 }
